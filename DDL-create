@@ -1,0 +1,115 @@
+create table customer
+	(
+	customer_id int auto_increment not null,
+	customer_name varchar(50),
+	customer_phone_number varchar(10),
+	
+	primary key (customer_id)
+	)
+	Engine=InnoDB;
+	
+create table vehicle
+	(
+	license_plate_number varchar(7),
+	vehicle_model varchar(40),
+	vehicle_color varchar(30),
+	
+	primary key (license_plate_number)
+	)
+	Engine=InnoDB;
+	
+create table vehicle_checking
+	(
+	checking_id int auto_increment not null,
+	check_in_time varchar(30),
+	check_in_vehicle_condition varchar(60),
+	check_out_time varchar(30),
+	check_out_vehicle_condition varchar(60),
+	
+	primary key (checking_id)
+	)
+	Engine=InnoDB;
+	
+create table hotel
+	(
+	hotel_room_number varchar(7),
+	hotel_room_type varchar(25),
+	hotel_room_price numeric(12,2),
+	
+	primary key (hotel_room_number)
+	)
+	Engine=InnoDB;
+	
+create table parking_spot
+	(
+	parking_spot_number varchar(4),
+	parking_spot_type varchar(30),
+	
+	primary key (parking_spot_number)
+	)
+	Engine=InnoDB;
+	
+create table employee
+	(
+	employee_id int auto_increment not null,
+	employee_name varchar(40),
+	employee_phone_number varchar(10),
+	
+	primary key (employee_id)
+	)
+	Engine=InnoDB;
+	
+create table customer_vehicle
+	(
+	customer_id int,
+	license_plate_number varchar(7),
+	
+	primary key (customer_id, license_plate_number),
+	foreign key (customer_id) references customer (customer_id) on delete set null,
+	foreign key (license_plate_number) references vehicle (license_plate_number) on delete set null
+	)
+	Engine=InnoDB;
+	
+create table customer_hotel_room
+	(
+	customer_id int,
+	hotel_room_number varchar(7),
+	
+	primary key (customer_id, hotel_room_number),
+	foreign key (customer_id) references customer (customer_id) on delete set null,
+	foreign key (hotel_room_number) references hotel (hotel_room_number) on delete set null
+	)
+	Engine=InnoDB;
+	
+create table vehicle_parking_spot
+	(
+	license_plate_number varchar(7),
+	parking_spot_number varchar(4),
+	
+	primary key (license_plate_number, parking_spot_number),
+	foreign key (license_plate_number) references vehicle (license_plate_number) on delete set null,
+	foreign key (parking_spot_number) references parking_spot (parking_spot_number) on delete set null
+	)
+	Engine=InnoDB;
+	
+create table vehicle_employee
+	(
+	license_plate_number varchar(7),
+	employee_id int,
+	
+	primary key (license_plate_number, employee_id),
+	foreign key (license_plate_number) references vehicle (license_plate_number) on delete set null,
+	foreign key (employee_id) references employee (employee_id) on delete set null
+	)
+	Engine=InnoDB;
+	
+create table vehicle_checking_employee
+	(
+	checking_id int,
+	employee_id int,
+	
+	primary key (checking_id, employee_id),
+	foreign key (checking_id) references vehicle_checking (checking_id) on delete set null,
+	foreign key (employee_id) references employee (employee_id) on delete set null
+	)
+	Engine=InnoDB;
