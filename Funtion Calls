@@ -1,0 +1,213 @@
+<?php
+
+// Create connection
+function dbConnect()
+{
+	$servername = "localhost";
+	$username = "bcoronad_user";
+	$password = "*********";
+	$dbname = "bcoronad_valet";
+
+	$conn = new mysqli($servername, $username, $password, $dbname);
+	// Check connection
+	if ($conn->connect_error) {
+	    die("Connection failed: " . $conn->connect_error);
+	} 
+	return $conn;
+} //end of function 
+
+
+function echoCustomers($conn)
+{
+	$sql = "SELECT * FROM customer";
+	$result = $conn->query($sql);
+
+	if ($result->num_rows > 0)
+	{
+    	// output data of each row
+    	while($row = $result->fetch_assoc())
+		{
+			echo "id: " . $row["customer_id"]. " - Name: " . $row["customer_name"]. " - Phone Number: " . $row["customer_phone_number"] . " " . "<br>";
+  		}
+	}
+	else
+	{
+    	echo "0 results";
+	}
+
+}//end of function
+
+
+function echoHotelRoomsFromCustomerId($conn,$customerId)
+{
+	$sql = "SELECT hotel.* FROM hotel, customer, customer_hotel_room WHERE customer.customer_id = customer_hotel_room.customer_id and hotel.hotel_room_number = customer_hotel_room.hotel_room_number and customer.customer_id = " . $customerId; 
+	$result = $conn->query($sql);
+
+	if ($result->num_rows > 0)
+	{
+   		// output data of each row
+    	while($row = $result->fetch_assoc())
+		{
+			echo "Room Number: " . $row["hotel_room_number"]. " - Room Type: " . $row["hotel_room_type"]. " - Room Price: " . $row["hotel_room_price"]. " " . "<br>";
+  		}
+	}
+	else
+	{
+    	echo "0 results";
+	}
+
+}//end of function
+
+
+function echoVehiclesFromCustomerId($conn,$customerId)
+{
+	$sql = "SELECT vehicle.* FROM vehicle, customer, customer_vehicle WHERE customer.customer_id = customer_vehicle.customer_id and vehicle.license_plate_number = customer_vehicle.license_plate_number and customer.customer_id = " . $customerId; 
+	$result = $conn->query($sql);
+
+	if ($result->num_rows > 0)
+	{
+   		// output data of each row
+    	while($row = $result->fetch_assoc())
+		{
+			echo "License Plate Number: " . $row["license_plate_number"]. " - Vehicle Model: " . $row["vehicle_model"]. " - Vehicle Color: " . $row["vehicle_color"]. " " . "<br>";
+  		}
+	}
+	else
+	{
+    	echo "0 results";
+	}
+
+}//end of function
+
+function echoVehicleCheckingsFromEmployeeId($conn,$employeeId)
+{
+	$sql = "SELECT vehicle_checking.* FROM vehicle_checking, employee, vehicle_checking_employee WHERE employee.employee_id = vehicle_checking_employee.employee_id and vehicle_checking.checking_id = vehicle_checking_employee.checking_id and employee.employee_id = " . $employeeId; 
+	$result = $conn->query($sql);
+
+	if ($result->num_rows > 0)
+	{
+   		// output data of each row
+    	while($row = $result->fetch_assoc())
+		{
+			echo "Checking Id: " . $row["checking_id"]. " - Check-In Time: " . $row["check_in_time"]. " - Check-In Vehicle Condition: " . $row["check_in_vehicle_condition"]. " - Check-Out Time: " . $row["check_out_time"]. " - Check-Out Vehicle Condition: " . $row["check_out_vehicle_condition"]. " " . "<br>";
+  		}
+	}
+	else
+	{
+    	echo "0 results";
+	}
+
+}//end of function
+
+
+function echoParkingSpotFromCheckingId($conn,$checkingId)
+{
+	$sql = "SELECT parking_spot.* FROM parking_spot, vehicle, vehicle_checking, vehicle_parking_spot WHERE parking_spot.parking_spot_number = vehicle_parking_spot.parking_spot_number AND vehicle.license_plate_number = vehicle_parking_spot.license_plate_number AND vehicle.license_plate_number = vehicle_checking.license_plate_number AND vehicle_checking.checking_id = " . $checkingId;
+	$result = $conn->query($sql);
+
+	if ($result->num_rows > 0)
+	{
+   		// output data of each row
+    	while($row = $result->fetch_assoc())
+		{
+			echo "Parking Spot Number: " . $row["parking_spot_number"]. " - Parking Spot Type: " . $row["parking_spot_type"]. " " . "<br>";
+  		}
+	}
+	else
+	{
+    	echo "0 results";
+	}
+
+}//end of function
+
+
+function deleteCustomerFromCustomerId($conn,$customerId)
+{
+	$sql = "DELETE FROM customer WHERE customer_id = " . $customer_id;
+	
+	if ($conn->query($sql) === TRUE)
+	{
+		echo "Record Successfully Deleted";
+	}
+	else
+	{
+		echo "Error deleting record: " . $conn->error;
+	}
+}
+
+
+function deleteEmployeeFromEmployeeId($conn,$employeeId)
+{
+	$sql = "DELETE FROM employee WHERE employee_id = " . $employee_id;
+	
+	if ($conn->query($sql) === TRUE)
+	{
+		echo "Record Successfully Deleted";
+	}
+	else
+	{
+		echo "Error deleting record: " . $conn->error;
+	}
+}
+
+
+function insertCustomer($conn,$customerId,$customerName,$customerPhoneNumber)
+{
+	$sql = "INSERT INTO customer (customer_id, customer_name, customer_phone_number) VALUES (" . $customerId . ", '" .  $customerName . "', '" . $customerPhoneNumber . "')";
+	
+	if ($conn->query($sql) === TRUE)
+	{
+		echo "New Record created successfully";
+	}
+	else
+	{
+		echo "Error: " . $sql . "<br>" . $conn->error;
+	}
+}
+
+function insertEmployee($conn,$employeeId,$employeeName,$employeePhoneNumber)
+{
+	$sql = "INSERT INTO employee (employee_id, employee_name, employee_phone_number) VALUES (" . $employeeId . ", '" .  $employeeName . "', '" . $employeePhoneNumber . "')";
+	
+	if ($conn->query($sql) === TRUE)
+	{
+		echo "New Record created successfully";
+	}
+	else
+	{
+		echo "Error: " . $sql . "<br>" . $conn->error;
+	}
+}
+
+
+function updateCustomerNameFromCustomerId($conn,$newCustomerName,$customerId)
+{
+	$sql = "UPDATE customer SET customer_name = '" . $newCustomerName . "' WHERE customer_id = " . $customerId;
+	
+	if ($conn->query($sql) === TRUE)
+	{
+		echo "Record updated successfully";
+	}
+	else
+	{
+		echo "Error updating record: " . $conn->error;
+	}
+}
+
+
+function updateEmployeeNameFromEmployeeId($conn,$newEmployeeName,$employeeId)
+{
+	$sql = "UPDATE employee SET employee_name = '" . $newEmployeeName . "' WHERE employee_id = " . $employeeId;
+	
+	if ($conn->query($sql) === TRUE)
+	{
+		echo "Record updated successfully";
+	}
+	else
+	{
+		echo "Error updating record: " . $conn->error;
+	}
+}
+
+
+?>
